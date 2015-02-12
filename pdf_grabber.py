@@ -29,18 +29,26 @@ def convert_pdf_to_txt(path):
 
 def search(pdf_file, searched_string):
     """
-    This function returns the starting place of str2 within str1. str1 is defined as the PDF file        that we are converting to text.  
+    TODO: Add additional functionality - perhaps searching for all instances of searched_string within pdf_file.
+    This function returns the starting place of searched_string within pdf_file. pdf_file is a string containing pdf text.  
     """     
     return pdf_file.index(searched_string)
     
 
 searched_string = "caused"
 
-for pdf_name in os.listdir("."):
-    if pdf_name[0] == ".":
-        continue
-    textFromPdf = convert_pdf_to_txt(pdf_name)
-    textFromPdf = textFromPdf.rstrip().replace("\\n","")
-    print repr(textFromPdf)
-    positionOfSearchedText = search(textFromPdf, searched_string)
-    print "the index of {} in {} is {}".format(searched_string, pdf_name, positionOfSearchedText)
+def main():
+    """
+    TODO: Add command-line functionality. Discuss more design specifics before implementing.
+    """
+    for pdf_name in os.listdir("."):
+        if pdf_name[0] == ".":
+            continue
+        textFromPdf = convert_pdf_to_txt(pdf_name)
+        textFromPdf = textFromPdf.rstrip().replace("\\n","")
+        print repr(textFromPdf)
+        positionOfSearchedText = search(textFromPdf, searched_string)
+        print "the index of {} in {} is {}".format(searched_string, pdf_name, positionOfSearchedText)
+
+if __name__ == '__main__':
+    main()
