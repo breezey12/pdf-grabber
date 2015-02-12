@@ -1,4 +1,6 @@
 import os  
+import re
+import argparse
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
@@ -28,26 +30,30 @@ def convert_pdf_to_txt(path):
 
 
 def search(pdf_file, searched_string):
-    """
-    TODO: Add additional functionality - perhaps searching for all instances of searched_string within pdf_file.
-    This function returns the starting place of searched_string within pdf_file. pdf_file is a string containing pdf text.  
+    """This function returns the starting place of searched_string within pdf_file. pdf_file is a string containing pdf text.  
     """     
-    return pdf_file.index(searched_string)
-    
+    # make an iterator containing matchObjects from the search term
+    matches = re.finditer(searched_string, pdf_file)
+    # create a list of the index of the start of each match
+    matchIndices = []
+    for match in matches:
+        matchIndices.append(match.start())
+    return matchIndices 
 
-searched_string = "caused"
 
 def main():
-    """
-    TODO: Add command-line functionality. Discuss more design specifics before implementing.
-    """
-    for pdf_name in os.listdir("."):
-        if pdf_name.endswith('.pdf'):
-            textFromPdf = convert_pdf_to_txt(pdf_name)
+    parser = argparse.ArgumentParser(description="take a search term and search for it in PDFs")
+    parser.add_argument("search_term", type=str, help="the search term -- can only be one word, no quotes required")
+    args = parser.parse_args()
+    searched_string = args.search_term
+    for filename in os.listdir("."):
+        if filename.endswith('.pdf'):
+            textFromPdf = convert_pdf_to_txt(filename)
             textFromPdf = textFromPdf.rstrip().replace("\\n","")
-            print repr(textFromPdf)
-            positionOfSearchedText = search(textFromPdf, searched_string)
-            print "the index of {} in {} is {}".format(searched_string, pdf_name, positionOfSearchedText)
+            # print repr(textFromPdf) # prints all characters, including hidden ones
+            positionsOfSearchedText = search(textFromPdf, searched_string)
+            for position in positionsOfSearchedText:
+                print "the index of '{}' in {} is {}".format(searched_string, filename, position)
         else:
             continue
 
