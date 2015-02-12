@@ -42,13 +42,14 @@ def main():
     TODO: Add command-line functionality. Discuss more design specifics before implementing.
     """
     for pdf_name in os.listdir("."):
-        if pdf_name[0] == ".":
+        if pdf_name.endswith('.pdf'):
+            textFromPdf = convert_pdf_to_txt(pdf_name)
+            textFromPdf = textFromPdf.rstrip().replace("\\n","")
+            print repr(textFromPdf)
+            positionOfSearchedText = search(textFromPdf, searched_string)
+            print "the index of {} in {} is {}".format(searched_string, pdf_name, positionOfSearchedText)
+        else:
             continue
-        textFromPdf = convert_pdf_to_txt(pdf_name)
-        textFromPdf = textFromPdf.rstrip().replace("\\n","")
-        print repr(textFromPdf)
-        positionOfSearchedText = search(textFromPdf, searched_string)
-        print "the index of {} in {} is {}".format(searched_string, pdf_name, positionOfSearchedText)
 
 if __name__ == '__main__':
     main()
