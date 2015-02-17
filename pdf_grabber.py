@@ -54,8 +54,11 @@ def main():
             textFromPdf = textFromPdf.rstrip().replace("\\n","")
             # print repr(textFromPdf) # prints all characters, including hidden ones
             positionsOfSearchedText = search(textFromPdf, searched_string)
-            for position in positionsOfSearchedText:
-                print "the index of '{}' in {} is {}".format(searched_string, filename, position)
+            if len(positionsOfSearchedText) == 0:
+                print "Nothing was found"
+            else:
+                for position in positionsOfSearchedText:
+                    print "the index of '{}' in {} is {}".format(searched_string, filename, position)
         else:
             continue
 
