@@ -31,7 +31,9 @@ def convert_pdf_to_txt(path):
 
 def search(pdf_file, searched_string):
     """This function returns the starting place of searched_string within pdf_file. pdf_file is a string containing pdf text.  
-    """     
+    """
+    pdf_file = pdf_file.lower()
+    searched_string = searched_string.lower()     
     # make an iterator containing matchObjects from the search term
     matches = re.finditer(searched_string, pdf_file)
     # create a list of the index of the start of each match
