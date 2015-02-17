@@ -55,7 +55,7 @@ def main():
             # print repr(textFromPdf) # prints all characters, including hidden ones
             positionsOfSearchedText = search(textFromPdf, searched_string)
             if len(positionsOfSearchedText) == 0:
-                print "Nothing was found"
+                print "Nothing was found in {}".format(filename)
             else:
                 for position in positionsOfSearchedText:
                     print "the index of '{}' in {} is {}".format(searched_string, filename, position)
