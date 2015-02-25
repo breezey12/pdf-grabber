@@ -9,6 +9,9 @@ from pdfminer.pdfpage import PDFPage
 from cStringIO import StringIO
 
 def convert_pdf_to_txt(path, pageRange=0):
+    """ This converts a PDF file to a string, with an optional argument
+    to specify number of pages.
+    """
     rsrcmgr = PDFResourceManager()
     retstr = StringIO()
     codec = 'utf-8'
@@ -30,48 +33,40 @@ def convert_pdf_to_txt(path, pageRange=0):
     str = retstr.getvalue()
     retstr.close()
     return str
-def search(pdf_file, searched_string):
-    """This function returns the starting place of searched_string within pdf_file. pdf_file is a string containing pdf text.  
-    """
-    pdf_file = pdf_file.lower()
-    searched_string = searched_string.lower()     
-    # make an iterator containing matchObjects from the search term
-    matches = re.finditer(searched_string, pdf_file)
-    # create a list of the index of the start of each match
-    matchIndices = []
-    for match in matches:
-        matchIndices.append(match.start())
-    return matchIndices 
     
-    
-def crunch_toc(pdf_file, searched_string):
-    """returns page number of searched_string from table of contents.
-    table of contents is speculated to be in the first five pages of a given PDF
-    """
-    first_five_pages = convert_pdf_to_txt(pdf_file, range(5))
-    print first_five_pages
+def clean_string(string):
+    pass
 
-def cli():
-    parser = argparse.ArgumentParser(description="take a search term and search for it in PDFs")
-    parser.add_argument("search_term", type=str, help="the search term -- can only be one word, no quotes required")
-    args = parser.parse_args()
-    searched_string = args.search_term
-    for filename in os.listdir("."):
-        if filename.endswith('.pdf'):
-            textFromPdf = convert_pdf_to_txt(filename)
-            textFromPdf = textFromPdf.rstrip().replace("\\n","")
-            # print repr(textFromPdf) # prints all characters, including hidden ones
-            positionsOfSearchedText = search(textFromPdf, searched_string)
-            if len(positionsOfSearchedText) == 0:
-                print "Nothing was found in {}".format(filename)
-            else:
-                for position in positionsOfSearchedText:
-                    print "the index of '{}' in {} is {}".format(searched_string, filename, position)
-        else:
-            continue
-            
+           
 def main():
-    crunch_toc("PepsiCo.pdf", "1A")
+    """loops through all the PDFs in the local directory and prints
+    the first five pages starting at the second page number present
+    on the table of contents.  this number is *usually* the risk disclosure,
+    but not always.
+
+    TO-DO: break this off into functions
+    TO-DO: compensate for the X% that don't have risk disclosures in the second
+    TOC listing.
+    TO-DO: make sure it's printing the page number it's found.
+    """
+
+    files = os.listdir(".")
+    for file in files:
+        if file.endswith(".pdf"):
+            pdf_text = convert_pdf_to_txt(file, [1,2,3,4,5,6])
+#    print repr(pdf_text)
+    # variations of this search should include "Exhibits
+            searches = ["Exhibits and Financial", "EXHIBITS, FINANCIAL", "Exhibits, Financial"]
+            for search in searches:
+                first_index = pdf_text.find(search)
+                if first_index != -1:
+                    break
+            print first_index
+            titrated_loc = pdf_text[first_index:first_index+500]
+            toc = re.findall("\d+", titrated_loc)
+            risk_disclosure_start = int(toc[1])
+            risk_disclosure_text = convert_pdf_to_txt(file, [risk_disclosure_start, risk_disclosure_start+1, risk_disclosure_start+2, risk_disclosure_start+3, risk_disclosure_start+4])
+            print risk_disclosure_text 
 
 if __name__ == '__main__':
     main()
